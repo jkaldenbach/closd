@@ -1,21 +1,46 @@
-<div class="mdl-card mdl-shadow--6dp">
-  <form name="vm.loginForm">
-		<div class="mdl-card__title mdl-color--primary mdl-color-text--white">
-			<h2 class="mdl-card__title-text">Closd - Login</h2>
-		</div>
-  	<div class="mdl-card__supporting-text">
-				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-					<input class="mdl-textfield__input" type="text" id="loginName"
-            ng-model="vm.loginName" ng-change="vm.clearAlert()">
-					<label class="mdl-textfield__label" for="loginName">Login Name</label>
-				</div>
-        <div class="mdl-typography--title-color-contrast">
+<ion-modal-view>
+  <ion-header-bar>
+    <h1 class="title">Login</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closeLogin()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content>
+    <form ng-submit="doLogin()">
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">Username</span>
+          <input type="text" ng-model="loginData.username">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Password</span>
+          <input type="password" ng-model="loginData.password">
+        </label>
+        <label class="item">
+          <button class="button button-block button-positive" type="submit">Log in</button>
+        </label>
+      </div>
+    </form>
+  </ion-content>
+</ion-modal-view>
+
+<div class="col-xs-12">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h1>Closd - Login</h1>
+    </div>
+    <div class="panel-body">
+      <form name="vm.loginForm">
+        <div class="form-group">
+          <label for="loginName">Login Name</label>
+          <input ng-model="vm.loginName" ng-change="vm.clearAlert()"
+            type="text" name="loginName" class="form-control">
+        </div>
+        <div class="form-group text-danger">
           {{ vm.alert }}
         </div>
-		</div>
-		<div class="mdl-card__actions mdl-card--border">
-			<input type="submit" ng-click="vm.login(vm.loginName)" value="Login"
-        class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-		</div>
-  </form>
+        <input type="submit" ng-click="vm.login(vm.loginName)" class="btn btn-success">
+      </form>
+    </div>
+  </div>
 </div>

@@ -6,5 +6,11 @@ export default function routes(stateProvider, routerProvider) {
     template: require('./areas/login/login.html'),
     controller: 'LoginController',
     controllerAs: 'vm'
+  })
+  .state('home', {
+    url: '/list',
+    template: require('./areas/home/home.html'),
+    controller: 'HomeController',
+    controllerAs: 'vm'
   });
 }
