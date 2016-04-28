@@ -1,7 +1,9 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-var todos = require('./todos/index');
+var path = require('path');
+
+var todosRoutes = require('./todos/index');
 
 // log all incoming requests
 app.use(function(req, res, next) {
@@ -10,11 +12,16 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.set('view engine', 'html');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(express.static('www'))
+app.use('/static', express.static('src'))
 
-app.use('/api', todos);
+app.get('/', function(req, res) {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+app.use('/api', todosRoutes);
 
 app.listen(3000);

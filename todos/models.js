@@ -5,6 +5,7 @@ var user = new Schema({
     first: { type:String, require: true },
     last: String
   },
+  loginName: String,
   picture: String
 });
 
