@@ -14,6 +14,23 @@ export default function TodoList() {
 
 function TodoListController() {
   var todoVM = this;
+  todoVM.filter = 'all'
+
+  todoVM.setFilter = function(filter) {
+    todoVM.filter = filter;
+  };
+
+  todoVM.filterFn = {
+    all: function() {
+      return true;
+    },
+    complete: function(todo) {
+      return todo.isComplete;
+    },
+    incomplete: function(todo) {
+      return !todo.isComplete;
+    }
+  };
 
   todoVM.getIconClass = function(todo) {
     var iconClass = '';
@@ -26,4 +43,13 @@ function TodoListController() {
     todo.isComplete = !todo.isComplete;
     todoVM.saveAction(todo);
   };
+
+  todoVM.editTodo = function(todo) {
+    todo.editing = true;
+  };
+
+  todoVM.doneEditing = function(todo) {
+    delete todo.editing;
+    todoVM.saveAction(todo);
+  }
 }

@@ -7,11 +7,27 @@
       <i class="icon ion-plus-circled"></i>
     </button>
   </form>
-  <div ng-repeat="todo in todoVM.todos"
+  <div class="item">
+    <button ng-click="todoVM.setFilter('complete')" class="button button-default">Complete</button>
+    <button ng-click="todoVM.setFilter('incomplete')" class="button button-default">Incomplete</button>
+    <button ng-click="todoVM.setFilter('all')" class="button button-default">All</button>
+  </div>
+  <div ng-repeat="todo in todoVM.todos | filter:todoVM.filterFn[todoVM.filter]"
     ng-click="todoVM.completeAction(todo)" class="item item-icon-left">
     <a ng-click="todoVM.complete(todo)">
       <i class="icon" ng-class="todoVM.getIconClass(todo)"></i>
     </a>
-    {{ todo.title }}
+    <span ng-show="!todo.editing">
+      {{ todo.title }}
+      <a ng-click="todoVM.editTodo(todo)">
+        Edit
+      </a>
+    </span>
+    <span ng-show="todo.editing">
+      <input type="text" ng-model="todo.title">
+      <a ng-click="todoVM.doneEditing(todo)">
+        Save
+      </a>
+    </span>
   </div>
 </div>
