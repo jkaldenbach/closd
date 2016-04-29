@@ -7,8 +7,8 @@
       <i class="icon ion-plus-circled"></i>
     </button>
   </form>
-  <div ng-repeat="todo in todoVM.todos" ng-click="todoVM.completeAction(todo)"
-    class="item item-icon-left">
+  <div ng-repeat="todo in todoVM.todos"
+    ng-click="todoVM.completeAction(todo)" class="item item-icon-left">
     <a ng-click="todoVM.complete(todo)">
       <i class="icon" ng-class="todoVM.getIconClass(todo)"></i>
     </a>

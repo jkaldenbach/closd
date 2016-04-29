@@ -20746,7 +20746,7 @@
 /* 16 */
 /***/ function(module, exports) {
 
-	module.exports = "<ion-view view-title=\"List\">\n  <ion-content>\n    <div class=\"list card\">\n      <div class=\"item item-image\">\n        <img ng-src=\"./static/img/{{ vm.user.picture }}\" alt=\"vm.user.name.full\" />\n      </div>\n      <div class=\"item item-icon-left\">\n        <i class=\"icon ion-ios-home\"></i>\n        {{ vm.user.name.full }}\n      </div>\n    </div>\n\n    <todo-list todos=\"vm.todos\" create-action=\"vm.newTodo\"\n      complete-action=\"vm.toggleComplete\">\n    </todo-list>\n  </ion-content>\n</ion-view>\n";
+	module.exports = "<ion-view view-title=\"List\">\n  <ion-content>\n    <div class=\"list card\">\n      <div class=\"item item-image\">\n        <img ng-src=\"./static/img/{{ vm.user.picture }}\" alt=\"vm.user.name.full\" />\n      </div>\n      <div class=\"item item-icon-left\">\n        <i class=\"icon ion-ios-home\"></i>\n        {{ vm.user.name.full }}\n      </div>\n    </div>\n\n    <todo-list todos=\"vm.todos\" create-action=\"vm.newTodo\"\n      save-action=\"vm.save\">\n    </todo-list>\n  </ion-content>\n</ion-view>\n";
 
 /***/ },
 /* 17 */
@@ -20758,14 +20758,16 @@
 	  value: true
 	});
 	exports.default = ListController;
-	ListController.$inject = ['UserService', 'TodoService'];
-	function ListController(User, Todo) {
+	ListController.$inject = ['$scope', 'UserService', 'TodoService'];
+	function ListController($scope, User, Todo) {
 	  var vm = this;
 
-	  User.getUser().then(function (user) {
-	    vm.user = user;
-	  }).then(Todo.getAllTodos).then(function (todos) {
-	    vm.todos = todos;
+	  $scope.$on('$ionicView.enter', function () {
+	    User.getUser().then(function (user) {
+	      vm.user = user;
+	    }).then(Todo.getAllTodos).then(function (todos) {
+	      vm.todos = todos;
+	    });
 	  });
 
 	  vm.newTodo = function (title) {
@@ -20774,11 +20776,12 @@
 	      _user: vm.user._id,
 	      isComplete: false
 	    };
-	    Todo.create(newTodo);
-	    vm.todos.unshift(newTodo);
+	    Todo.create(newTodo).then(function (newTodo) {
+	      vm.todos.unshift(newTodo);
+	    });
 	  };
 
-	  vm.toggleComplete = function (todo) {
+	  vm.save = function (todo) {
 	    Todo.save(todo);
 	  };
 	}
@@ -20839,7 +20842,10 @@
 	  };
 
 	  this.create = function (todo) {
-	    return $http.post('./api/todos', todo);
+	    return $http.post('./api/todos', todo).then(function (resp) {
+	      console.log(resp);
+	      return resp.data;
+	    });
 	  };
 
 	  this.save = function (todo) {
@@ -20891,7 +20897,7 @@
 /* 23 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"list card\">\n  <form class=\"item item-input\">\n    <label class=\"item-input-wrapper\">\n      <input ng-model=\"todoVM.newTodoTitle\" type=\"text\" placeholder=\"What to do?\">\n    </label>\n    <button ng-click=\"todoVM.createAction(todoVM.newTodoTitle)\" class=\"button\">\n      <i class=\"icon ion-plus-circled\"></i>\n    </button>\n  </form>\n  <div ng-repeat=\"todo in todoVM.todos\" ng-click=\"todoVM.completeAction(todo)\"\n    class=\"item item-icon-left\">\n    <a ng-click=\"todoVM.complete(todo)\">\n      <i class=\"icon\" ng-class=\"todoVM.getIconClass(todo)\"></i>\n    </a>\n    {{ todo.title }}\n  </div>\n</div>\n";
+	module.exports = "<div class=\"list card\">\n  <form class=\"item item-input\">\n    <label class=\"item-input-wrapper\">\n      <input ng-model=\"todoVM.newTodoTitle\" type=\"text\" placeholder=\"What to do?\">\n    </label>\n    <button ng-click=\"todoVM.createAction(todoVM.newTodoTitle)\" class=\"button\">\n      <i class=\"icon ion-plus-circled\"></i>\n    </button>\n  </form>\n  <div ng-repeat=\"todo in todoVM.todos\"\n    ng-click=\"todoVM.completeAction(todo)\" class=\"item item-icon-left\">\n    <a ng-click=\"todoVM.complete(todo)\">\n      <i class=\"icon\" ng-class=\"todoVM.getIconClass(todo)\"></i>\n    </a>\n    {{ todo.title }}\n  </div>\n</div>\n";
 
 /***/ },
 /* 24 */,

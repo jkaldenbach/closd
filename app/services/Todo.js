@@ -7,7 +7,11 @@ export default function TodoService($http, $q) {
   };
 
   this.create = function(todo) {
-    return $http.post('./api/todos', todo);
+    return $http.post('./api/todos', todo)
+      .then(function(resp) {
+        console.log(resp);
+        return resp.data;
+      });
   };
 
   this.save = function(todo) {

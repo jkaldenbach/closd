@@ -1,11 +1,13 @@
-ListController.$inject = ['UserService', 'TodoService'];
-export default function ListController(User, Todo) {
+ListController.$inject = ['$scope', 'UserService', 'TodoService'];
+export default function ListController($scope, User, Todo) {
   var vm = this;
 
-  User.getUser().then(function(user) {
-    vm.user = user;
-  }).then(Todo.getAllTodos).then(function(todos) {
-    vm.todos = todos;
+  $scope.$on('$ionicView.enter', function() {
+    User.getUser().then(function(user) {
+      vm.user = user;
+    }).then(Todo.getAllTodos).then(function(todos) {
+      vm.todos = todos;
+    });
   });
 
   vm.newTodo = function(title) {
@@ -14,11 +16,12 @@ export default function ListController(User, Todo) {
       _user: vm.user._id,
       isComplete: false
     };
-    Todo.create(newTodo);
-    vm.todos.unshift(newTodo);
+    Todo.create(newTodo).then(function(newTodo) {
+      vm.todos.unshift(newTodo);
+    });
   };
 
-  vm.toggleComplete = function(todo) {
+  vm.save = function(todo) {
     Todo.save(todo);
   };
 }
