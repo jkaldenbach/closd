@@ -1,46 +1,22 @@
-<ion-modal-view>
-  <ion-header-bar>
-    <h1 class="title">Login</h1>
-    <div class="buttons">
-      <button class="button button-clear" ng-click="closeLogin()">Close</button>
-    </div>
-  </ion-header-bar>
+<ion-view view-title="Login">
   <ion-content>
-    <form ng-submit="doLogin()">
+    <form name="vm.loginForm">
       <div class="list">
-        <label class="item item-input">
-          <span class="input-label">Username</span>
-          <input type="text" ng-model="loginData.username">
+        <label class="item item-input item-floating-label" for="loginName">
+          <span class="input-label">Login Name</span>
+          <input ng-model="vm.loginName" ng-change="vm.clearAlert()"
+            type="text" name="loginName" placeholder="Login Name">
         </label>
-        <label class="item item-input">
-          <span class="input-label">Password</span>
-          <input type="password" ng-model="loginData.password">
+        <label ng-if="vm.alert" class="item">
+          {{ vm.alert }}
         </label>
         <label class="item">
-          <button class="button button-block button-positive" type="submit">Log in</button>
+          <button ng-click="vm.login(vm.loginName)"
+            class="button button-block button-positive" type="submit">
+            Log in
+          </button>
         </label>
       </div>
     </form>
   </ion-content>
-</ion-modal-view>
-
-<div class="col-xs-12">
-  <div class="panel panel-primary">
-    <div class="panel-heading">
-      <h1>Closd - Login</h1>
-    </div>
-    <div class="panel-body">
-      <form name="vm.loginForm">
-        <div class="form-group">
-          <label for="loginName">Login Name</label>
-          <input ng-model="vm.loginName" ng-change="vm.clearAlert()"
-            type="text" name="loginName" class="form-control">
-        </div>
-        <div class="form-group text-danger">
-          {{ vm.alert }}
-        </div>
-        <input type="submit" ng-click="vm.login(vm.loginName)" class="btn btn-success">
-      </form>
-    </div>
-  </div>
-</div>
+</ion-view>

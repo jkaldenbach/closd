@@ -1,21 +1,13 @@
-{{ vm.test }}
-<h1>home</h1>
-<div class="mdl-card mdl-shadow--2dp">
-  <div class="mdl-card__title">
-    <h2 class="mdl-card__title-text">Welcome</h2>
-  </div>
-  <div class="mdl-card__supporting-text">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-    Mauris sagittis pellentesque lacus eleifend lacinia...
-  </div>
-  <div class="mdl-card__actions mdl-card--border">
-    <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-      Get Started
-    </a>
-  </div>
-  <div class="mdl-card__menu">
-    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-      <i class="material-icons">share</i>
-    </button>
-  </div>
-</div>
+<ion-tabs class="tabs-icon-top tabs-color-active-positive">
+
+  <ion-tab href="#/list" title="List" icon-off="ion-ios-home-outline"
+    icon-on="ion-ios-home">
+    <ion-nav-view name="tab-list"></ion-nav-view>
+  </ion-tab>
+
+  <ion-tab href="#/account" title="Settings" icon-off="ion-ios-gear-outline"
+    icon-on="ion-ios-gear">
+    <ion-nav-view name="tab-account"></ion-nav-view>
+  </ion-tab>
+
+</ion-tabs>

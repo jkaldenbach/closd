@@ -5,7 +5,7 @@ export default function LoginController($state, Users) {
   vm.login = function(loginName) {
     Users.login(loginName)
       .then(function(resp) {
-        if (resp) $state.go('home');
+        if (resp) $state.go('home.list');
         else vm.alert = 'User not found!';
       });
   };

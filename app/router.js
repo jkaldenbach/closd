@@ -8,9 +8,30 @@ export default function routes(stateProvider, routerProvider) {
     controllerAs: 'vm'
   })
   .state('home', {
-    url: '/list',
+    url: '',
+    abstract: 'true',
     template: require('./areas/home/home.html'),
     controller: 'HomeController',
     controllerAs: 'vm'
+  })
+  .state('home.list', {
+    url: '/list',
+    views: {
+      'tab-list': {
+        template: require('./areas/list/list.html'),
+        controller: 'ListController',
+        controllerAs: 'vm'
+      }
+    }
+  })
+  .state('home.account', {
+    url: '/account',
+    views: {
+      'tab-account': {
+        template: require('./areas/account/account.html'),
+        controller: 'AccountController',
+        controllerAs: 'vm'
+      }
+    }
   });
 }

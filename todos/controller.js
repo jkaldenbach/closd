@@ -7,7 +7,8 @@ module.exports = function(db) {
     var login = req.params.login;
     db.User.findOne({loginName: login}, function(err, user) {
       if (err) next(err);
-      else res.json(user);
+      else if (!user) res.status(404).send('not found');
+      else res.json(user.toJSON({virtuals: true}));
     });
   };
 

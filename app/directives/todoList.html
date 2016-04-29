@@ -1,0 +1,15 @@
+<div class="list card">
+  <form class="item item-input">
+    <label class="item-input-wrapper">
+      <input ng-model="todoVM.newTodoTitle" type="text" placeholder="What to do?">
+    </label>
+    <button ng-click="todoVM.createAction(todoVM.newTodoTitle)" class="button">
+      <i class="icon ion-plus-circled"></i>
+    </button>
+  </form>
+  <a ng-repeat="todo in todoVM.todos" ng-click="todoVM.completeAction(todo)"
+    class="item item-icon-left">
+    <i class="icon" ng-class="todoVM.getIconClass(todo)"></i>
+    {{ todo.title }}
+  </a>
+</div>

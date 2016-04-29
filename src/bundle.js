@@ -78,6 +78,14 @@
 
 	var _User2 = _interopRequireDefault(_User);
 
+	var _Todo = __webpack_require__(20);
+
+	var _Todo2 = _interopRequireDefault(_Todo);
+
+	var _todoList = __webpack_require__(22);
+
+	var _todoList2 = _interopRequireDefault(_todoList);
+
 	var _login = __webpack_require__(7);
 
 	var _login2 = _interopRequireDefault(_login);
@@ -86,16 +94,25 @@
 
 	var _home2 = _interopRequireDefault(_home);
 
+	var _list = __webpack_require__(17);
+
+	var _list2 = _interopRequireDefault(_list);
+
+	var _account = __webpack_require__(19);
+
+	var _account2 = _interopRequireDefault(_account);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// directives
 	// controllers
 
 
 	// config
 
 
-	_angular2.default.module('closdApp', [_angularUiRouter2.default, _angularAnimate2.default, _angularSanitize2.default, 'ionic']).config(_router2.default).service('UserService', _User2.default).controller('LoginController', _login2.default).controller('HomeController', _home2.default);
+	_angular2.default.module('closdApp', [_angularUiRouter2.default, _angularAnimate2.default, _angularSanitize2.default, 'ionic']).config(_router2.default).service('UserService', _User2.default).service('TodoService', _Todo2.default).directive('todoList', _todoList2.default).controller('LoginController', _login2.default).controller('HomeController', _home2.default).controller('ListController', _list2.default).controller('AccountController', _account2.default);
+	// directives
+
 	// serices
 
 
@@ -18421,10 +18438,29 @@
 	    controller: 'LoginController',
 	    controllerAs: 'vm'
 	  }).state('home', {
-	    url: '/list',
+	    url: '',
+	    abstract: 'true',
 	    template: __webpack_require__(8),
 	    controller: 'HomeController',
 	    controllerAs: 'vm'
+	  }).state('home.list', {
+	    url: '/list',
+	    views: {
+	      'tab-list': {
+	        template: __webpack_require__(16),
+	        controller: 'ListController',
+	        controllerAs: 'vm'
+	      }
+	    }
+	  }).state('home.account', {
+	    url: '/account',
+	    views: {
+	      'tab-account': {
+	        template: __webpack_require__(18),
+	        controller: 'AccountController',
+	        controllerAs: 'vm'
+	      }
+	    }
 	  });
 	}
 
@@ -18432,7 +18468,7 @@
 /* 5 */
 /***/ function(module, exports) {
 
-	module.exports = "<ion-modal-view>\n  <ion-header-bar>\n    <h1 class=\"title\">Login</h1>\n    <div class=\"buttons\">\n      <button class=\"button button-clear\" ng-click=\"closeLogin()\">Close</button>\n    </div>\n  </ion-header-bar>\n  <ion-content>\n    <form ng-submit=\"doLogin()\">\n      <div class=\"list\">\n        <label class=\"item item-input\">\n          <span class=\"input-label\">Username</span>\n          <input type=\"text\" ng-model=\"loginData.username\">\n        </label>\n        <label class=\"item item-input\">\n          <span class=\"input-label\">Password</span>\n          <input type=\"password\" ng-model=\"loginData.password\">\n        </label>\n        <label class=\"item\">\n          <button class=\"button button-block button-positive\" type=\"submit\">Log in</button>\n        </label>\n      </div>\n    </form>\n  </ion-content>\n</ion-modal-view>\n\n<div class=\"col-xs-12\">\n  <div class=\"panel panel-primary\">\n    <div class=\"panel-heading\">\n      <h1>Closd - Login</h1>\n    </div>\n    <div class=\"panel-body\">\n      <form name=\"vm.loginForm\">\n        <div class=\"form-group\">\n          <label for=\"loginName\">Login Name</label>\n          <input ng-model=\"vm.loginName\" ng-change=\"vm.clearAlert()\"\n            type=\"text\" name=\"loginName\" class=\"form-control\">\n        </div>\n        <div class=\"form-group text-danger\">\n          {{ vm.alert }}\n        </div>\n        <input type=\"submit\" ng-click=\"vm.login(vm.loginName)\" class=\"btn btn-success\">\n      </form>\n    </div>\n  </div>\n</div>\n";
+	module.exports = "<ion-view view-title=\"Login\">\n  <ion-content>\n    <form name=\"vm.loginForm\">\n      <div class=\"list\">\n        <label class=\"item item-input item-floating-label\" for=\"loginName\">\n          <span class=\"input-label\">Login Name</span>\n          <input ng-model=\"vm.loginName\" ng-change=\"vm.clearAlert()\"\n            type=\"text\" name=\"loginName\" placeholder=\"Login Name\">\n        </label>\n        <label ng-if=\"vm.alert\" class=\"item\">\n          {{ vm.alert }}\n        </label>\n        <label class=\"item\">\n          <button ng-click=\"vm.login(vm.loginName)\"\n            class=\"button button-block button-positive\" type=\"submit\">\n            Log in\n          </button>\n        </label>\n      </div>\n    </form>\n  </ion-content>\n</ion-view>\n";
 
 /***/ },
 /* 6 */
@@ -18446,18 +18482,17 @@
 	exports.default = UserService;
 	UserService.$inject = ['$http', '$q'];
 	function UserService($http, $q) {
-	  var data = {};
 
 	  this.login = function (login) {
 	    return $http.get('./api/users/getUserByLogin/' + login).then(function (resp) {
-	      data.user = resp.data;
+	      localStorage.user = JSON.stringify(resp.data);
 	      return resp.data;
 	    });
 	  };
 
 	  this.getUser = function (loginName) {
 	    var deferred = $q.defer();
-	    if (data.user) deferred.resolve(data.user);else deferred.resolve(this.login(loginName));
+	    if (localStorage.user) deferred.resolve(JSON.parse(localStorage.user));else deferred.resolve(this.login(loginName));
 	    return deferred.promise;
 	  };
 	}
@@ -18478,7 +18513,7 @@
 
 	  vm.login = function (loginName) {
 	    Users.login(loginName).then(function (resp) {
-	      if (resp) $state.go('home');else vm.alert = 'User not found!';
+	      if (resp) $state.go('home.list');else vm.alert = 'User not found!';
 	    });
 	  };
 
@@ -18491,7 +18526,7 @@
 /* 8 */
 /***/ function(module, exports) {
 
-	module.exports = "{{ vm.test }}\n<h1>home</h1>\n<div class=\"mdl-card mdl-shadow--2dp\">\n  <div class=\"mdl-card__title\">\n    <h2 class=\"mdl-card__title-text\">Welcome</h2>\n  </div>\n  <div class=\"mdl-card__supporting-text\">\n    Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n    Mauris sagittis pellentesque lacus eleifend lacinia...\n  </div>\n  <div class=\"mdl-card__actions mdl-card--border\">\n    <a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">\n      Get Started\n    </a>\n  </div>\n  <div class=\"mdl-card__menu\">\n    <button class=\"mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect\">\n      <i class=\"material-icons\">share</i>\n    </button>\n  </div>\n</div>\n";
+	module.exports = "<ion-tabs class=\"tabs-icon-top tabs-color-active-positive\">\n\n  <ion-tab href=\"#/list\" title=\"List\" icon-off=\"ion-ios-home-outline\"\n    icon-on=\"ion-ios-home\">\n    <ion-nav-view name=\"tab-list\"></ion-nav-view>\n  </ion-tab>\n\n  <ion-tab href=\"#/account\" title=\"Settings\" icon-off=\"ion-ios-gear-outline\"\n    icon-on=\"ion-ios-gear\">\n    <ion-nav-view name=\"tab-account\"></ion-nav-view>\n  </ion-tab>\n\n</ion-tabs>\n";
 
 /***/ },
 /* 9 */
@@ -20698,6 +20733,138 @@
 	    };
 	  }]);
 	})(window, window.angular);
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	module.exports = "<ion-view view-title=\"List\">\n  <ion-content>\n    <div class=\"list card\">\n      <div class=\"item item-image\">\n        <img ng-src=\"http://placekitten.com/400/200\" alt=\"vm.user.name.full\" />\n      </div>\n      <div class=\"item item-icon-left\">\n        <i class=\"icon ion-ios-home\"></i>\n        {{ vm.user.name.full }}\n      </div>\n    </div>\n\n    <todo-list todos=\"vm.todos\" create-action=\"vm.newTodo\"\n      complete-action=\"vm.toggleComplete\">\n    </todo-list>\n  </ion-content>\n</ion-view>\n";
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = ListController;
+	ListController.$inject = ['UserService', 'TodoService'];
+	function ListController(User, Todo) {
+	  var vm = this;
+
+	  User.getUser().then(function (user) {
+	    vm.user = user;
+	  }).then(Todo.getAllTodos).then(function (todos) {
+	    vm.todos = todos;
+	  });
+
+	  vm.newTodo = function (title) {
+	    var newTodo = {
+	      title: title,
+	      _user: vm.user._id,
+	      isComplete: false
+	    };
+	    Todo.create(newTodo);
+	    vm.todos.unshift(newTodo);
+	  };
+
+	  vm.toggleComplete = function (todo) {
+	    todo.isComplete = !todo.isComplete;
+	    Todo.save(todo);
+	  };
+	}
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	module.exports = "{{ vm.test }}\n";
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = AccountController;
+	function AccountController() {
+	  var vm = this;
+	  vm.test = 'account';
+	}
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = TodoService;
+	TodoService.$inject = ['$http', '$q'];
+	function TodoService($http, $q) {
+	  this.getAllTodos = function () {
+	    return $http.get('./api/todos').then(function (resp) {
+	      localStorage.todos = JSON.stringify(resp.data);
+	      return resp.data;
+	    });
+	  };
+
+	  this.create = function (todo) {
+	    return $http.post('./api/todos', todo);
+	  };
+
+	  this.save = function (todo) {
+	    return $http.put('./api/todos/' + todo._id, todo);
+	  };
+	}
+
+/***/ },
+/* 21 */,
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = TodoList;
+	function TodoList() {
+	  return {
+	    restrict: 'E',
+	    bindToController: {
+	      todos: '=',
+	      createAction: '=',
+	      completeAction: '='
+	    },
+	    template: __webpack_require__(23),
+	    controller: TodoListController,
+	    controllerAs: 'todoVM'
+	  };
+	}
+
+	function TodoListController() {
+	  var todoVM = this;
+
+	  todoVM.getIconClass = function (todo) {
+	    var iconClass = '';
+	    if (todo.isComplete) iconClass = 'ion-checkmark-circled';else iconClass = 'ion-ios-circle-outline';
+	    return iconClass;
+	  };
+	}
+
+/***/ },
+/* 23 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class=\"list card\">\n  <form class=\"item item-input\">\n    <label class=\"item-input-wrapper\">\n      <input ng-model=\"todoVM.newTodoTitle\" type=\"text\" placeholder=\"What to do?\">\n    </label>\n    <button ng-click=\"todoVM.createAction(todoVM.newTodoTitle)\" class=\"button\">\n      <i class=\"icon ion-plus-circled\"></i>\n    </button>\n  </form>\n  <a ng-repeat=\"todo in todoVM.todos\" ng-click=\"todoVM.completeAction(todo)\"\n    class=\"item item-icon-left\">\n    <i class=\"icon\" ng-class=\"todoVM.getIconClass(todo)\"></i>\n    {{ todo.title }}\n  </a>\n</div>\n";
 
 /***/ }
 /******/ ]);
