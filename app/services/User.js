@@ -9,10 +9,14 @@ export default function UserService($http, $q) {
       });
   };
 
-  this.getUser = function(loginName) {
+  this.getUser = function(loginName, forceUpdate) {
     var deferred = $q.defer();
-    if (localStorage.user) deferred.resolve(JSON.parse(localStorage.user));
+    if (localStorage.user && !forceUpdate) deferred.resolve(JSON.parse(localStorage.user));
     else deferred.resolve(this.login(loginName));
     return deferred.promise;
   };
+
+  this.save = function(user) {
+    return $http.put('./api/users/' + user._id, user);
+  }
 }

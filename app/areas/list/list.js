@@ -19,7 +19,6 @@ export default function ListController(User, Todo) {
   };
 
   vm.toggleComplete = function(todo) {
-    todo.isComplete = !todo.isComplete;
     Todo.save(todo);
   };
 }

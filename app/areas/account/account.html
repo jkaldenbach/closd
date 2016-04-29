@@ -1,1 +1,33 @@
-{{ vm.test }}
+<ion-view view-title="Account">
+  <ion-content>
+    <div ng-form name="vm.userForm">
+      <div class="list">
+        <label class="item item-input item-floating-label" for="firstName">
+          <span class="input-label">Fist Name</span>
+          <input ng-model="vm.user.name.first"
+            type="text" name="firstName" placeholder="First Name">
+        </label>
+        <label class="item item-input item-floating-label" for="lastName">
+          <span class="input-label">Last Name</span>
+          <input ng-model="vm.user.name.last"
+            type="text" name="lastName" placeholder="Last Name">
+        </label>
+        <form id="picForm" action="./api/users/savePicture" method="POST"
+          enctype="multipart/form-data" target="uploadTarget">
+          <input type="hidden" name="id" value="{{ vm.user._id }}"
+          <label class="item item-input item-floating-label" for="picture">
+            <span class="input-label">Picture</span>
+            <input type="file" name="picture" placeholder="Picture">
+          </label>
+        </form>
+        <label class="item">
+          <button ng-click="vm.saveUser(vm.user)"
+            class="button button-block button-positive" type="submit">
+            Save
+          </button>
+        </label>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>
+<iframe name="uploadTarget" iframe-onload="vm.uploadFinished()"></iframe>

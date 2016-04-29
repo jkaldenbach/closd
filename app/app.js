@@ -12,6 +12,7 @@ import UserService from './services/User';
 import TodoService from './services/Todo';
 // directives
 import TodoList from './directives/todoList';
+import IframeOnload from './directives/iframeOnload';
 // controllers
 import LoginController from './areas/login/login';
 import HomeController from './areas/home/home';
@@ -23,6 +24,7 @@ angular.module('closdApp', [uirouter, nganimate, ngsanitize, 'ionic'])
   .service('UserService', UserService)
   .service('TodoService', TodoService)
   .directive('todoList', TodoList)
+  .directive('iframeOnload', IframeOnload)
   .controller('LoginController', LoginController)
   .controller('HomeController', HomeController)
   .controller('ListController', ListController)

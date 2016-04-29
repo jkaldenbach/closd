@@ -86,6 +86,10 @@
 
 	var _todoList2 = _interopRequireDefault(_todoList);
 
+	var _iframeOnload = __webpack_require__(28);
+
+	var _iframeOnload2 = _interopRequireDefault(_iframeOnload);
+
 	var _login = __webpack_require__(7);
 
 	var _login2 = _interopRequireDefault(_login);
@@ -106,14 +110,14 @@
 
 	// controllers
 
-
-	// config
-
-
-	_angular2.default.module('closdApp', [_angularUiRouter2.default, _angularAnimate2.default, _angularSanitize2.default, 'ionic']).config(_router2.default).service('UserService', _User2.default).service('TodoService', _Todo2.default).directive('todoList', _todoList2.default).controller('LoginController', _login2.default).controller('HomeController', _home2.default).controller('ListController', _list2.default).controller('AccountController', _account2.default);
 	// directives
 
 	// serices
+
+
+	_angular2.default.module('closdApp', [_angularUiRouter2.default, _angularAnimate2.default, _angularSanitize2.default, 'ionic']).config(_router2.default).service('UserService', _User2.default).service('TodoService', _Todo2.default).directive('todoList', _todoList2.default).directive('iframeOnload', _iframeOnload2.default).controller('LoginController', _login2.default).controller('HomeController', _home2.default).controller('ListController', _list2.default).controller('AccountController', _account2.default);
+
+	// config
 
 
 	_angular2.default.bootstrap(document, ['closdApp']);
@@ -18490,10 +18494,14 @@
 	    });
 	  };
 
-	  this.getUser = function (loginName) {
+	  this.getUser = function (loginName, forceUpdate) {
 	    var deferred = $q.defer();
-	    if (localStorage.user) deferred.resolve(JSON.parse(localStorage.user));else deferred.resolve(this.login(loginName));
+	    if (localStorage.user && !forceUpdate) deferred.resolve(JSON.parse(localStorage.user));else deferred.resolve(this.login(loginName));
 	    return deferred.promise;
+	  };
+
+	  this.save = function (user) {
+	    return $http.put('./api/users/' + user._id, user);
 	  };
 	}
 
@@ -20738,7 +20746,7 @@
 /* 16 */
 /***/ function(module, exports) {
 
-	module.exports = "<ion-view view-title=\"List\">\n  <ion-content>\n    <div class=\"list card\">\n      <div class=\"item item-image\">\n        <img ng-src=\"http://placekitten.com/400/200\" alt=\"vm.user.name.full\" />\n      </div>\n      <div class=\"item item-icon-left\">\n        <i class=\"icon ion-ios-home\"></i>\n        {{ vm.user.name.full }}\n      </div>\n    </div>\n\n    <todo-list todos=\"vm.todos\" create-action=\"vm.newTodo\"\n      complete-action=\"vm.toggleComplete\">\n    </todo-list>\n  </ion-content>\n</ion-view>\n";
+	module.exports = "<ion-view view-title=\"List\">\n  <ion-content>\n    <div class=\"list card\">\n      <div class=\"item item-image\">\n        <img ng-src=\"./static/img/{{ vm.user.picture }}\" alt=\"vm.user.name.full\" />\n      </div>\n      <div class=\"item item-icon-left\">\n        <i class=\"icon ion-ios-home\"></i>\n        {{ vm.user.name.full }}\n      </div>\n    </div>\n\n    <todo-list todos=\"vm.todos\" create-action=\"vm.newTodo\"\n      complete-action=\"vm.toggleComplete\">\n    </todo-list>\n  </ion-content>\n</ion-view>\n";
 
 /***/ },
 /* 17 */
@@ -20771,7 +20779,6 @@
 	  };
 
 	  vm.toggleComplete = function (todo) {
-	    todo.isComplete = !todo.isComplete;
 	    Todo.save(todo);
 	  };
 	}
@@ -20780,7 +20787,7 @@
 /* 18 */
 /***/ function(module, exports) {
 
-	module.exports = "{{ vm.test }}\n";
+	module.exports = "<ion-view view-title=\"Account\">\n  <ion-content>\n    <div ng-form name=\"vm.userForm\">\n      <div class=\"list\">\n        <label class=\"item item-input item-floating-label\" for=\"firstName\">\n          <span class=\"input-label\">Fist Name</span>\n          <input ng-model=\"vm.user.name.first\"\n            type=\"text\" name=\"firstName\" placeholder=\"First Name\">\n        </label>\n        <label class=\"item item-input item-floating-label\" for=\"lastName\">\n          <span class=\"input-label\">Last Name</span>\n          <input ng-model=\"vm.user.name.last\"\n            type=\"text\" name=\"lastName\" placeholder=\"Last Name\">\n        </label>\n        <form id=\"picForm\" action=\"./api/users/savePicture\" method=\"POST\"\n          enctype=\"multipart/form-data\" target=\"uploadTarget\">\n          <input type=\"hidden\" name=\"id\" value=\"{{ vm.user._id }}\"\n          <label class=\"item item-input item-floating-label\" for=\"picture\">\n            <span class=\"input-label\">Picture</span>\n            <input type=\"file\" name=\"picture\" placeholder=\"Picture\">\n          </label>\n        </form>\n        <label class=\"item\">\n          <button ng-click=\"vm.saveUser(vm.user)\"\n            class=\"button button-block button-positive\" type=\"submit\">\n            Save\n          </button>\n        </label>\n      </div>\n    </div>\n  </ion-content>\n</ion-view>\n<iframe name=\"uploadTarget\" iframe-onload=\"vm.uploadFinished()\"></iframe>\n";
 
 /***/ },
 /* 19 */
@@ -20792,9 +20799,25 @@
 	  value: true
 	});
 	exports.default = AccountController;
-	function AccountController() {
+	AccountController.$inject = ['$state', 'UserService'];
+	function AccountController($state, User) {
 	  var vm = this;
-	  vm.test = 'account';
+	  User.getUser().then(function (user) {
+	    vm.user = user;
+	  });
+
+	  vm.saveUser = function (user) {
+	    User.save(user).then(function () {
+	      document.getElementById('picForm').submit();
+	    });
+	  };
+
+	  vm.uploadFinished = function () {
+	    console.log('uploadFinished');
+	    User.getUser(vm.user.loginName, true).then(function () {
+	      $state.go('home.list');
+	    });
+	  };
 	}
 
 /***/ },
@@ -20811,7 +20834,6 @@
 	function TodoService($http, $q) {
 	  this.getAllTodos = function () {
 	    return $http.get('./api/todos').then(function (resp) {
-	      localStorage.todos = JSON.stringify(resp.data);
 	      return resp.data;
 	    });
 	  };
@@ -20842,7 +20864,7 @@
 	    bindToController: {
 	      todos: '=',
 	      createAction: '=',
-	      completeAction: '='
+	      saveAction: '='
 	    },
 	    template: __webpack_require__(23),
 	    controller: TodoListController,
@@ -20858,13 +20880,45 @@
 	    if (todo.isComplete) iconClass = 'ion-checkmark-circled';else iconClass = 'ion-ios-circle-outline';
 	    return iconClass;
 	  };
+
+	  todoVM.complete = function (todo) {
+	    todo.isComplete = !todo.isComplete;
+	    todoVM.saveAction(todo);
+	  };
 	}
 
 /***/ },
 /* 23 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"list card\">\n  <form class=\"item item-input\">\n    <label class=\"item-input-wrapper\">\n      <input ng-model=\"todoVM.newTodoTitle\" type=\"text\" placeholder=\"What to do?\">\n    </label>\n    <button ng-click=\"todoVM.createAction(todoVM.newTodoTitle)\" class=\"button\">\n      <i class=\"icon ion-plus-circled\"></i>\n    </button>\n  </form>\n  <a ng-repeat=\"todo in todoVM.todos\" ng-click=\"todoVM.completeAction(todo)\"\n    class=\"item item-icon-left\">\n    <i class=\"icon\" ng-class=\"todoVM.getIconClass(todo)\"></i>\n    {{ todo.title }}\n  </a>\n</div>\n";
+	module.exports = "<div class=\"list card\">\n  <form class=\"item item-input\">\n    <label class=\"item-input-wrapper\">\n      <input ng-model=\"todoVM.newTodoTitle\" type=\"text\" placeholder=\"What to do?\">\n    </label>\n    <button ng-click=\"todoVM.createAction(todoVM.newTodoTitle)\" class=\"button\">\n      <i class=\"icon ion-plus-circled\"></i>\n    </button>\n  </form>\n  <div ng-repeat=\"todo in todoVM.todos\" ng-click=\"todoVM.completeAction(todo)\"\n    class=\"item item-icon-left\">\n    <a ng-click=\"todoVM.complete(todo)\">\n      <i class=\"icon\" ng-class=\"todoVM.getIconClass(todo)\"></i>\n    </a>\n    {{ todo.title }}\n  </div>\n</div>\n";
+
+/***/ },
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = iframeOnload;
+	function iframeOnload() {
+	  return {
+	    scope: {
+	      callBack: '&iframeOnload'
+	    },
+	    link: function link(scope, element, attrs) {
+	      element.on('load', function () {
+	        return scope.callBack();
+	      });
+	    }
+	  };
+	}
 
 /***/ }
 /******/ ]);
