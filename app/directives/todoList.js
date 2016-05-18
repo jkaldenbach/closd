@@ -12,7 +12,7 @@ export default function TodoList() {
   };
 }
 
-function TodoListController() {
+export function TodoListController() {
   var todoVM = this;
   todoVM.filter = 'all'
 
