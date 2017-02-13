@@ -19,7 +19,21 @@ var todo = new Schema({
   _user: { type: Schema.Types.ObjectId, ref: 'User' }
 });
 
+var message = new Schema({
+  content: String,
+  sender_id: Number,
+  recipient_id: Number
+});
+
+var userMessage = new Schema({
+  status: String,
+  message_id: Schema.Types.ObjectId,
+  user_id: Number
+});
+
 module.exports = {
   user: user,
-  todo: todo
+  todo: todo,
+  message: message,
+  userMessage: userMessage
 };
